@@ -35,10 +35,13 @@ namespace RabbitMQ {
             consumer.Received += (model, ea) => {
                 var body = ea.Body;
                 var message = Encoding.UTF8.GetString(body);
-                callback(message);
+                var result = callback(message);
+                if (result) {
+                    channel.BasicAck(ea.DeliveryTag, false);
+                }
             };
             channel.BasicConsume(queue: this.queue,
-                autoAck: true,
+                autoAck: false,
                 consumer: consumer);
         }
     }

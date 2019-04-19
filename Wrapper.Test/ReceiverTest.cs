@@ -5,11 +5,11 @@ namespace Test {
     public class ReceiverTest {
         [Fact]
         public void ReceiveMessageTest() {
-            Factory.Receiver.subscribe(
-                (message) => {
-                    Console.WriteLine(string.Format("Message received {0}", message));
-                }
-            );
+            ReceiverSubscribeCallback callback = (message) => {
+                Console.WriteLine(string.Format("Message received: \"{0}\"", message));
+                return true;
+            };
+            Factory.Receiver.subscribe(callback);
         }
     }
 }

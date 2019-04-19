@@ -1,5 +1,5 @@
 
 
-public delegate void ReceiverSubscribeCallback(string message);
+public delegate bool ReceiverSubscribeCallback(string message);
 
 
