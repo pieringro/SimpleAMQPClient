@@ -9,7 +9,7 @@ namespace RabbitMQ.Configuration {
             get {
                 if (_instance == null || _instance.refreshInstance) {
                     _instance = new RabbitMQSettings();
-                    _instance.buildConfigurations("RabbitMQSettings");
+                    _instance.buildConfigurations("SimpleAMQPWrapper.RabbitMQSettings");
                 }
                 return _instance;
             }

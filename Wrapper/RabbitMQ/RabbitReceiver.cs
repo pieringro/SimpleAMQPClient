@@ -15,8 +15,12 @@ namespace RabbitMQ {
         }
 
         private void setConfiguration() {
-            queue = RabbitMQSettings.Instance.Queue;
-            hostname = RabbitMQSettings.Instance.HostName;
+            try {
+                queue = RabbitMQSettings.Instance.Queue;
+                hostname = RabbitMQSettings.Instance.HostName;
+            } catch (Exception e) {
+                throw new Exception("Unable to start configuration for RabbitReceiver: " + e.Message);
+            }
         }
 
         private void init() {

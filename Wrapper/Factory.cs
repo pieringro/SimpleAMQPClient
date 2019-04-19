@@ -7,10 +7,18 @@ public static class Factory {
     private static IReceiver _receiver;
     public static IReceiver Receiver {
         get {
-            if (_receiver == null) {
-                string className = FactorySettings.Instance.ReceiverAMQP;
-                Type t = Type.GetType(className);
-                _receiver = (IReceiver) Activator.CreateInstance(t);
+            try {
+
+                if (_receiver == null) {
+                    string className = FactorySettings.Instance.ReceiverAMQP;
+                    if (className == null) {
+                        throw new Exception("Unable to get Receiver configurated.");
+                    }
+                    Type t = Type.GetType(className);
+                    _receiver = (IReceiver)Activator.CreateInstance(t);
+                }
+            } catch (Exception e) {
+                throw new Exception("Exception during get Receiver. " + e.Message);
             }
             return _receiver;
         }
@@ -19,10 +27,18 @@ public static class Factory {
     private static ISender _sender;
     public static ISender Sender {
         get {
-            if (_sender == null) {
-                string className = FactorySettings.Instance.SenderAMQP;
-                Type t = Type.GetType(className);
-                _sender = (ISender) Activator.CreateInstance(t);
+            try {
+
+                if (_sender == null) {
+                    string className = FactorySettings.Instance.SenderAMQP;
+                    if (className == null) {
+                        throw new Exception("Unable to get Receiver configurated.");
+                    }
+                    Type t = Type.GetType(className);
+                    _sender = (ISender)Activator.CreateInstance(t);
+                }
+            } catch (Exception e) {
+                throw new Exception("Exception during get Receiver. " + e.Message);
             }
             return _sender;
         }

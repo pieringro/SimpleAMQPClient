@@ -9,7 +9,7 @@ namespace Configuration {
             get {
                 if (_instance == null || _instance.refreshInstance) {
                     _instance = new FactorySettings();
-                    _instance.buildConfigurations("FactorySettings");
+                    _instance.buildConfigurations("SimpleAMQPWrapper.FactorySettings");
                 }
                 return _instance;
             }
