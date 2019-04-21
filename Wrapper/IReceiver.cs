@@ -1,3 +1,6 @@
-public interface IReceiver {
-    void subscribe(ReceiverSubscribeCallback callback);
+namespace SimpleAMQPWrapper {
+
+    public interface IReceiver {
+        void subscribe(ReceiverSubscribeCallback callback);
+    }
 }

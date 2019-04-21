@@ -1,46 +1,52 @@
 using System;
 using System.Reflection;
-using Configuration;
+using SimpleAMQPWrapper.Configuration;
 
-public static class Factory {
+namespace SimpleAMQPWrapper {
 
-    private static IReceiver _receiver;
-    public static IReceiver Receiver {
-        get {
-            try {
+    public static class Factory {
 
-                if (_receiver == null) {
-                    string className = FactorySettings.Instance.ReceiverAMQP;
-                    if (className == null) {
-                        throw new Exception("Unable to get Receiver configurated.");
+        private static IReceiver _receiver;
+        public static IReceiver Receiver {
+            get {
+                try {
+
+                    if (_receiver == null) {
+                        string className = FactorySettings.Instance.ReceiverAMQP;
+                        if (className == null) {
+                            throw new Exception("Unable to get Receiver configurated.");
+                        }
+                        Type t = Type.GetType(className);
+                        if (t == null) {
+                            throw new Exception(string.Format("Receiver configuration error. {0} not found", className));
+                        }
+                        _receiver = (IReceiver)Activator.CreateInstance(t);
                     }
-                    Type t = Type.GetType(className);
-                    _receiver = (IReceiver)Activator.CreateInstance(t);
+                } catch (Exception e) {
+                    throw new Exception("Exception during get Receiver. " + e.Message);
                 }
-            } catch (Exception e) {
-                throw new Exception("Exception during get Receiver. " + e.Message);
+                return _receiver;
             }
-            return _receiver;
         }
-    }
 
-    private static ISender _sender;
-    public static ISender Sender {
-        get {
-            try {
+        private static ISender _sender;
+        public static ISender Sender {
+            get {
+                try {
 
-                if (_sender == null) {
-                    string className = FactorySettings.Instance.SenderAMQP;
-                    if (className == null) {
-                        throw new Exception("Unable to get Receiver configurated.");
+                    if (_sender == null) {
+                        string className = FactorySettings.Instance.SenderAMQP;
+                        if (className == null) {
+                            throw new Exception("Unable to get Sender configurated.");
+                        }
+                        Type t = Type.GetType(className);
+                        _sender = (ISender)Activator.CreateInstance(t);
                     }
-                    Type t = Type.GetType(className);
-                    _sender = (ISender)Activator.CreateInstance(t);
+                } catch (Exception e) {
+                    throw new Exception("Exception during get Sender. " + e.Message);
                 }
-            } catch (Exception e) {
-                throw new Exception("Exception during get Receiver. " + e.Message);
+                return _sender;
             }
-            return _sender;
         }
     }
 }

@@ -1,7 +1,7 @@
 using System.IO;
 using Microsoft.Extensions.Configuration;
 
-namespace Configuration {
+namespace SimpleAMQPWrapper.Configuration {
     public class FactorySettings : Settings {
 
         private static FactorySettings _instance;

@@ -1,5 +1,6 @@
 using System;
 using Xunit;
+using SimpleAMQPWrapper;
 
 namespace Test {
     public class SenderTest {

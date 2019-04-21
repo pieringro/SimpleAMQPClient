@@ -2,9 +2,10 @@
 using System.Text;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
-using RabbitMQ.Configuration;
+using SimpleAMQPWrapper.RabbitMQ.Configuration;
 
-namespace RabbitMQ {
+
+namespace SimpleAMQPWrapper.RabbitMQ {
     internal class RabbitReceiver : IReceiver {
         public string hostname { get; private set; }
         public string queue { get; private set; }

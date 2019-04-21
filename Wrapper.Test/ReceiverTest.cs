@@ -1,4 +1,5 @@
 using System;
+using SimpleAMQPWrapper;
 using Xunit;
 
 namespace Test {

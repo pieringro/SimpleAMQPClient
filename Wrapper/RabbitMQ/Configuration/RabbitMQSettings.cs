@@ -1,7 +1,7 @@
 using System.IO;
 using Microsoft.Extensions.Configuration;
 
-namespace RabbitMQ.Configuration {
+namespace SimpleAMQPWrapper.RabbitMQ.Configuration {
     internal class RabbitMQSettings : Settings {
 
         private static RabbitMQSettings _instance;

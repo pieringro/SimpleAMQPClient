@@ -1,5 +1,5 @@
+namespace SimpleAMQPWrapper {
 
+    public delegate bool ReceiverSubscribeCallback(string message);
 
-public delegate bool ReceiverSubscribeCallback(string message);
-
-
+}
