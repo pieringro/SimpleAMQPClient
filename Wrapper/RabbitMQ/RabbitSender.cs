@@ -22,7 +22,7 @@ namespace SimpleAMQPWrapper.RabbitMQ {
         private void setConfiguration() {
             try {
                 if (queue == null) {
-                    queue = RabbitMQSettings.Instance.Queue;
+                    queue = RabbitMQSettings.Instance.QueueSender;
                 }
                 hostname = RabbitMQSettings.Instance.HostName;
             } catch (Exception e) {

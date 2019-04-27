@@ -23,19 +23,29 @@ namespace SimpleAMQPWrapper.RabbitMQ.Configuration {
         public string HostName {
             get {
                 if (_HostName == null) {
-                    _HostName = ConfigurationSection["hostname"];
+                    _HostName = ConfigurationSection["Hostname"];
                 }
                 return _HostName;
             }
         }
 
-        private string _Queue;
-        public string Queue {
+        private string _QueueSender;
+        public string QueueSender {
             get {
-                if (_Queue == null) {
-                    _Queue = ConfigurationSection["queue"];
+                if (_QueueSender == null) {
+                    _QueueSender = ConfigurationSection["QueueSender"];
                 }
-                return _Queue;
+                return _QueueSender;
+            }
+        }
+
+        private string _QueueReceiver;
+        public string QueueReceiver {
+            get {
+                if (_QueueReceiver == null) {
+                    _QueueReceiver = ConfigurationSection["QueueReceiver"];
+                }
+                return _QueueReceiver;
             }
         }
 
