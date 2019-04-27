@@ -36,11 +36,12 @@ Factory.Receiver.subscribe(
 );
 ```
 
-Queue name is in appsettings.json configuration along with the host name.
+Queues names for Sender and for Receiver are in appsettings.json configuration along with the host name.
 ```json
 "RabbitMQSettings": {
-    "hostname": "localhost",
-    "queue": "hello"
+    "Hostname": "localhost",
+    "QueueReceiver": "hello",
+    "QueueSender": "hello"
 }
 ```
 
