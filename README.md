@@ -31,6 +31,7 @@ Factory.Sender.publishMessage("hello world!");
 Factory.Receiver.subscribe(
     (message) => {
         Console.WriteLine(string.Format("Message received {0}", message));
+        return true;
     }
 );
 ```
@@ -41,6 +42,21 @@ Queue name is in appsettings.json configuration along with the host name.
     "hostname": "localhost",
     "queue": "hello"
 }
+```
+
+**Send message and be consumer to custom queues**
+
+```c
+Factory.GetSenderCustom("customQueue").publishMessage("hello world!");
+```
+
+```c
+Factory.GetReceiverCustom("customQueue").subscribe(
+    (message) => {
+        Console.WriteLine(string.Format("Message received {0}", message));
+        return true;
+    }
+);
 ```
 
 
