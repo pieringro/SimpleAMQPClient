@@ -29,23 +29,23 @@ namespace SimpleAMQPWrapper.Configuration {
             }
         }
 
-        private string _SenderAMQP;
-        public string SenderAMQP {
+        private string _SenderAMQPClassName;
+        public string SenderAMQPClassName {
             get {
-                if (_SenderAMQP == null) {
-                    _SenderAMQP = ConfigurationSection.GetSection(AMQP)["SenderAMQP"];
+                if (_SenderAMQPClassName == null) {
+                    _SenderAMQPClassName = ConfigurationSection.GetSection(AMQP)["SenderAMQP"];
                 }
-                return _SenderAMQP;
+                return _SenderAMQPClassName;
             }
         }
 
-        private string _ReceiverAMQP;
-        public string ReceiverAMQP {
+        private string _ReceiverAMQPClassName;
+        public string ReceiverAMQPClassName {
             get {
-                if (_ReceiverAMQP == null) {
-                    _ReceiverAMQP = ConfigurationSection.GetSection(AMQP)["ReceiverAMQP"];
+                if (_ReceiverAMQPClassName == null) {
+                    _ReceiverAMQPClassName = ConfigurationSection.GetSection(AMQP)["ReceiverAMQP"];
                 }
-                return _ReceiverAMQP;
+                return _ReceiverAMQPClassName;
             }
         }
     }

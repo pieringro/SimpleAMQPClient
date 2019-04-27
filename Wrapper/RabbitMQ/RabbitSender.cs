@@ -13,9 +13,17 @@ namespace SimpleAMQPWrapper.RabbitMQ {
             this.init();
         }
 
+        public RabbitSender(string queue) {
+            this.queue = queue;
+            this.setConfiguration();
+            this.init();
+        }
+
         private void setConfiguration() {
             try {
-                queue = RabbitMQSettings.Instance.Queue;
+                if (queue == null) {
+                    queue = RabbitMQSettings.Instance.Queue;
+                }
                 hostname = RabbitMQSettings.Instance.HostName;
             } catch (Exception e) {
                 throw new Exception("Unable to start configuration for RabbitSender: " + e.Message);

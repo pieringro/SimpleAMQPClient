@@ -4,20 +4,28 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using SimpleAMQPWrapper.RabbitMQ.Configuration;
 
-
 namespace SimpleAMQPWrapper.RabbitMQ {
     internal class RabbitReceiver : IReceiver {
         public string hostname { get; private set; }
         public string queue { get; private set; }
         private IModel channel;
+        private bool listening = false;
         public RabbitReceiver() {
+            this.setConfiguration();
+            this.init();
+        }
+
+        public RabbitReceiver(string queue) {
+            this.queue = queue;
             this.setConfiguration();
             this.init();
         }
 
         private void setConfiguration() {
             try {
-                queue = RabbitMQSettings.Instance.Queue;
+                if (queue == null) {
+                    queue = RabbitMQSettings.Instance.Queue;
+                }
                 hostname = RabbitMQSettings.Instance.HostName;
             } catch (Exception e) {
                 throw new Exception("Unable to start configuration for RabbitReceiver: " + e.Message);
@@ -36,18 +44,23 @@ namespace SimpleAMQPWrapper.RabbitMQ {
         }
 
         public void subscribe(ReceiverSubscribeCallback callback) {
-            var consumer = new EventingBasicConsumer(channel);
-            consumer.Received += (model, ea) => {
-                var body = ea.Body;
-                var message = Encoding.UTF8.GetString(body);
-                var result = callback(message);
-                if (result) {
-                    channel.BasicAck(ea.DeliveryTag, false);
-                }
-            };
-            channel.BasicConsume(queue: this.queue,
-                autoAck: false,
-                consumer: consumer);
+            if (!listening) {
+                var consumer = new EventingBasicConsumer(channel);
+                consumer.Received += (model, ea) => {
+                    var body = ea.Body;
+                    var message = Encoding.UTF8.GetString(body);
+                    var result = callback(message);
+                    if (result) {
+                        channel.BasicAck(ea.DeliveryTag, false);
+                    }
+                };
+                channel.BasicConsume(queue: this.queue,
+                    autoAck: false,
+                    consumer: consumer);
+                listening = true;
+            } else {
+                throw new DuplicateSubscriberException();
+            }
         }
     }
 }
