@@ -1,5 +1,9 @@
 using System;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization.Json;
 using System.Text;
+using Newtonsoft.Json;
 using RabbitMQ.Client;
 using SimpleAMQPWrapper.RabbitMQ.Configuration;
 
@@ -48,6 +52,23 @@ namespace SimpleAMQPWrapper.RabbitMQ {
                 routingKey : this.queue,
                 basicProperties : null,
                 body : body);
+        }
+
+        public void publishStructureMessage(string action, IMessageData data) {
+            var message = new Message() {
+                Action = action,
+                MessageData = data
+            };
+            var body = Encoding.UTF8.GetBytes(serializeMessage(message));
+            channel.BasicPublish(exchange: "",
+                routingKey : this.queue,
+                basicProperties : null,
+                body : body);
+        }
+
+        private string serializeMessage(Message message) {
+            string json = JsonConvert.SerializeObject(message);
+            return json;
         }
     }
 }

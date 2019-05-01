@@ -1,4 +1,6 @@
 using System;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using SimpleAMQPWrapper;
 using Xunit;
 
@@ -30,7 +32,18 @@ namespace Test {
             });
 
             Factory.GetReceiverCustom("customQueue2").subscribe(callback);
+        }
 
+        [Fact]
+        public void ReceiveStructureMainQueueTest() {
+            ReceiverSubscribeCallback callback = (message) => {
+                Console.WriteLine(string.Format("Message received: \"{0}\"", message));
+                JObject messageObj = (JObject) JsonConvert.DeserializeObject(message);
+                string action = messageObj.GetValue("Action").ToObject<string>();
+                var messageConcrete = messageObj.GetValue("MessageData").ToObject<MessageDataConcrete>();
+                return false;
+            };
+            Factory.Receiver.subscribe(callback);
         }
     }
 }
