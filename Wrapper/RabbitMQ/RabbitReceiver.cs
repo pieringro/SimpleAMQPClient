@@ -6,19 +6,19 @@ using SimpleAMQPWrapper.RabbitMQ.Configuration;
 
 namespace SimpleAMQPWrapper.RabbitMQ {
     internal class RabbitReceiver : IReceiver {
-        public string hostname { get; private set; }
-        public string queue { get; private set; }
         private IModel channel;
-        private bool listening = false;
-        public RabbitReceiver() {
-            this.setConfiguration();
-            this.init();
-        }
 
-        public RabbitReceiver(string queue) {
-            this.queue = queue;
+        public override void init() {
             this.setConfiguration();
-            this.init();
+
+            var factory = new ConnectionFactory() { HostName = this.hostname };
+            var connection = factory.CreateConnection();
+            channel = connection.CreateModel();
+            if (!string.IsNullOrEmpty(this.exchangeFanout)) {
+                this.initForExchangeFanout();
+            } else if (!string.IsNullOrEmpty(this.queue)) {
+                this.initForQueue();
+            }
         }
 
         private void setConfiguration() {
@@ -26,16 +26,16 @@ namespace SimpleAMQPWrapper.RabbitMQ {
                 if (queue == null) {
                     queue = RabbitMQSettings.Instance.QueueReceiver;
                 }
+                if (exchangeFanout == null) {
+                    exchangeFanout = RabbitMQSettings.Instance.ExchangeFanoutReceiver;
+                }
                 hostname = RabbitMQSettings.Instance.HostName;
             } catch (Exception e) {
                 throw new Exception("Unable to start configuration for RabbitReceiver: " + e.Message);
             }
         }
 
-        private void init() {
-            var factory = new ConnectionFactory() { HostName = this.hostname };
-            var connection = factory.CreateConnection();
-            channel = connection.CreateModel();
+        private void initForQueue() {
             channel.QueueDeclare(queue: this.queue,
                 durable: false,
                 exclusive: false,
@@ -43,7 +43,17 @@ namespace SimpleAMQPWrapper.RabbitMQ {
                 arguments: null);
         }
 
-        public void subscribe(ReceiverSubscribeCallback callback) {
+        private void initForExchangeFanout() {
+            channel.ExchangeDeclare(exchange: this.exchangeFanout, type: "fanout");
+
+            //create a new queue on this exchange
+            this.queue = channel.QueueDeclare().QueueName;
+            channel.QueueBind(queue: this.queue,
+                exchange: this.exchangeFanout,
+                routingKey: "");
+        }
+
+        public override void subscribe(ReceiverSubscribeCallback callback) {
             if (!listening) {
                 var consumer = new EventingBasicConsumer(channel);
                 consumer.Received += (model, ea) => {

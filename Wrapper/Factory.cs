@@ -14,6 +14,7 @@ namespace SimpleAMQPWrapper {
                 try {
                     if (_receiver == null) {
                         _receiver = buildReceiver();
+                        _receiver.init();
                     }
                 } catch (Exception e) {
                     throw new Exception("Exception during get Receiver. " + e.Message);
@@ -22,19 +23,39 @@ namespace SimpleAMQPWrapper {
             }
         }
 
-        private static Dictionary<string, IReceiver> _receiversMap = new Dictionary<string, IReceiver>();
-        public static IReceiver GetReceiverCustom(string queue) {
-            IReceiver receiver = null;
-            if (_receiversMap.ContainsKey(queue)) {
-                receiver = _receiversMap[queue];
-            } else {
-                receiver = buildReceiver(queue);
-                _receiversMap.Add(queue, receiver);
+        private static Dictionary<string, IReceiver> _receiversQueueMap = new Dictionary<string, IReceiver>();
+        private static Dictionary<string, IReceiver> _receiversExchangeMap = new Dictionary<string, IReceiver>();
+        public static IReceiver GetReceiverCustomQueue(string queue) {
+            IReceiver receiver = createReceiverIfNotExistInMap(queue, _receiversQueueMap);
+            if (!receiver.listening) {
+                receiver.queue = queue;
+                receiver.exchangeFanout = "";
+                receiver.init();
+            }
+            return receiver;
+        }
+        public static IReceiver GetReceiverCustomExchange(string exchange) {
+            IReceiver receiver = createReceiverIfNotExistInMap(exchange, _receiversExchangeMap);
+            if (!receiver.listening) {
+                receiver.exchangeFanout = exchange;
+                receiver.queue = "";
+                receiver.init();
             }
             return receiver;
         }
 
-        private static IReceiver buildReceiver(params string[] args) {
+        private static IReceiver createReceiverIfNotExistInMap(string key, Dictionary<string, IReceiver> map) {
+            IReceiver receiver = null;
+            if (map.ContainsKey(key)) {
+                receiver = map[key];
+            } else {
+                receiver = buildReceiver();
+                map.Add(key, receiver);
+            }
+            return receiver;
+        }
+
+        private static IReceiver buildReceiver() {
             IReceiver receiver;
 
             string className = FactorySettings.Instance.ReceiverAMQPClassName;
@@ -45,20 +66,20 @@ namespace SimpleAMQPWrapper {
             if (t == null) {
                 throw new Exception(string.Format("Receiver configuration error. {0} not found", className));
             }
-            receiver = (IReceiver)Activator.CreateInstance(t, args);
+            receiver = (IReceiver)Activator.CreateInstance(t);
 
             return receiver;
         }
         #endregion
 
         #region Sender
-
         private static ISender _sender;
         public static ISender Sender {
             get {
                 try {
                     if (_sender == null) {
                         _sender = buildSender();
+                        _sender.init();
                     }
                 } catch (Exception e) {
                     throw new Exception("Exception during get Sender. " + e.Message);
@@ -67,19 +88,43 @@ namespace SimpleAMQPWrapper {
             }
         }
 
-        private static Dictionary<string, ISender> _sendersMap = new Dictionary<string, ISender>();
-        public static ISender GetSenderCustom(string queue) {
+        private static Dictionary<string, ISender> _sendersQueueMap = new Dictionary<string, ISender>();
+        private static Dictionary<string, ISender> _sendersExchangeMap = new Dictionary<string, ISender>();
+
+        public static ISender GetSenderCustomQueue(string queue) {
             ISender sender = null;
-            if (_sendersMap.ContainsKey(queue)) {
-                sender = _sendersMap[queue];
-            } else {
-                sender = buildSender(queue);
-                _sendersMap.Add(queue, sender);
+            bool exists = createSenderIfNotExistInMap(queue, _sendersQueueMap, out sender);
+            if (!exists) {
+                sender.queue = queue;
+                sender.exchangeFanout = "";
+                sender.init();
+            }
+            return sender;
+        }
+        public static ISender GetSenderCustomExchange(string exchange) {
+            ISender sender = null;
+            bool exists = createSenderIfNotExistInMap(exchange, _sendersExchangeMap, out sender);
+            if (!exists) {
+                sender.exchangeFanout = exchange;
+                sender.queue = "";
+                sender.init();
             }
             return sender;
         }
 
-        private static ISender buildSender(params string[] args) {
+        private static bool createSenderIfNotExistInMap(string key, Dictionary<string, ISender> map, out ISender sender) {
+            sender = null;
+            if (map.ContainsKey(key)) {
+                sender = map[key];
+                return true;
+            } else {
+                sender = buildSender();
+                map.Add(key, sender);
+                return false;
+            }
+        }
+
+        private static ISender buildSender() {
             ISender sender;
 
             string className = FactorySettings.Instance.SenderAMQPClassName;
@@ -90,7 +135,7 @@ namespace SimpleAMQPWrapper {
             if (t == null) {
                 throw new Exception(string.Format("Sender configuration error. {0} not found", className));
             }
-            sender = (ISender)Activator.CreateInstance(t, args);
+            sender = (ISender)Activator.CreateInstance(t);
 
             return sender;
         }

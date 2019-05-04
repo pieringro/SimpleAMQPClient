@@ -9,24 +9,29 @@ using SimpleAMQPWrapper.RabbitMQ.Configuration;
 
 namespace SimpleAMQPWrapper.RabbitMQ {
     internal class RabbitSender : ISender {
-        public string hostname { get; private set; }
-        public string queue { get; private set; }
-        private IModel channel;
-        public RabbitSender() {
-            this.setConfiguration();
-            this.init();
-        }
 
-        public RabbitSender(string queue) {
-            this.queue = queue;
+        private IModel channel;
+
+        public override void init() {
             this.setConfiguration();
-            this.init();
+
+            var factory = new ConnectionFactory() { HostName = this.hostname };
+            var connection = factory.CreateConnection();
+            channel = connection.CreateModel();
+            if (!string.IsNullOrEmpty(this.exchangeFanout)) {
+                this.initForExchangeFanout();
+            } else if (!string.IsNullOrEmpty(this.queue)) {
+                this.initForQueue();
+            }
         }
 
         private void setConfiguration() {
             try {
                 if (queue == null) {
-                    queue = RabbitMQSettings.Instance.QueueSender;
+                    queue = RabbitMQSettings.Instance.QueueReceiver;
+                }
+                if (exchangeFanout == null) {
+                    exchangeFanout = RabbitMQSettings.Instance.ExchangeFanoutReceiver;
                 }
                 hostname = RabbitMQSettings.Instance.HostName;
             } catch (Exception e) {
@@ -34,10 +39,13 @@ namespace SimpleAMQPWrapper.RabbitMQ {
             }
         }
 
-        private void init() {
-            var factory = new ConnectionFactory() { HostName = this.hostname };
-            var connection = factory.CreateConnection();
-            channel = connection.CreateModel();
+        private void initForExchangeFanout() {
+            channel.ExchangeDeclare(exchange: this.exchangeFanout,
+                type: "fanout");
+            this.queue = "";
+        }
+
+        private void initForQueue() {
             channel.QueueDeclare(queue: this.queue,
                 durable: false,
                 exclusive: false,
@@ -45,22 +53,22 @@ namespace SimpleAMQPWrapper.RabbitMQ {
                 arguments: null);
         }
 
-        public void publishMessage(string message) {
+        public override void publishMessage(string message) {
             var body = Encoding.UTF8.GetBytes(message);
 
-            channel.BasicPublish(exchange: "",
-                routingKey : this.queue,
-                basicProperties : null,
-                body : body);
+            channel.BasicPublish(exchange: this.exchangeFanout,
+                routingKey: this.queue,
+                basicProperties: null,
+                body: body);
         }
 
-        public void publishStructureMessage(string action, IMessageData data) {
+        public override void publishStructureMessage(string action, IMessageData data) {
             var message = new Message() {
                 Action = action,
                 MessageData = data
             };
             var body = Encoding.UTF8.GetBytes(serializeMessage(message));
-            channel.BasicPublish(exchange: "",
+            channel.BasicPublish(exchange: this.exchangeFanout,
                 routingKey : this.queue,
                 basicProperties : null,
                 body : body);
