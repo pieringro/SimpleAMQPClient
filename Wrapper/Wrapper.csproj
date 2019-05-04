@@ -19,6 +19,6 @@
     </ItemGroup>
     <Target Name="PostBuild" AfterTargets="PostBuildEvent">
         <Exec Command="echo ^>^>^>^>^>^>^>^>^> Copying package file $(ProjectDir)$(OutDir)..\$(PackageId).$(PackageVersion).nupkg in folder $(ProjectDir)..\..\baget\"/>
-        <Exec Command="cp $(ProjectDir)$(OutDir)..\$(PackageId).$(PackageVersion).nupkg $(ProjectDir)..\..\baget\"/>
+        <Exec Command="copy $(ProjectDir)$(OutDir)..\$(PackageId).$(PackageVersion).nupkg $(ProjectDir)..\..\baget\"/>
     </Target>
 </Project>
