@@ -28,10 +28,10 @@ namespace SimpleAMQPWrapper.RabbitMQ {
         private void setConfiguration() {
             try {
                 if (queue == null) {
-                    queue = RabbitMQSettings.Instance.QueueReceiver;
+                    queue = RabbitMQSettings.Instance.QueueSender;
                 }
                 if (exchangeFanout == null) {
-                    exchangeFanout = RabbitMQSettings.Instance.ExchangeFanoutReceiver;
+                    exchangeFanout = RabbitMQSettings.Instance.ExchangeFanoutSender;
                 }
                 hostname = RabbitMQSettings.Instance.HostName;
             } catch (Exception e) {

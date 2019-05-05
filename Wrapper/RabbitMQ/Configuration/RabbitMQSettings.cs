@@ -58,5 +58,15 @@ namespace SimpleAMQPWrapper.RabbitMQ.Configuration {
                 return _ExchangeFanoutReceiver;
             }
         }
+
+        private string _ExchangeFanoutSender;
+        public string ExchangeFanoutSender {
+            get {
+                if (_ExchangeFanoutSender == null) {
+                    _ExchangeFanoutSender = ConfigurationSection["ExchangeFanoutSender"];
+                }
+                return _ExchangeFanoutSender;
+            }
+        }
     }
 }
