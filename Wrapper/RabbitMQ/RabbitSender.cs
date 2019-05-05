@@ -65,13 +65,14 @@ namespace SimpleAMQPWrapper.RabbitMQ {
         public override void publishStructureMessage(string action, IMessageData data) {
             var message = new Message() {
                 Action = action,
+                MessageDataClassName = data.GetType().Name,
                 MessageData = data
             };
             var body = Encoding.UTF8.GetBytes(serializeMessage(message));
             channel.BasicPublish(exchange: this.exchangeFanout,
-                routingKey : this.queue,
-                basicProperties : null,
-                body : body);
+                routingKey: this.queue,
+                basicProperties: null,
+                body: body);
         }
 
         private string serializeMessage(Message message) {
