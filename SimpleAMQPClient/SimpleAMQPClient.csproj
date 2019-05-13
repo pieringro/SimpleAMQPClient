@@ -21,9 +21,10 @@
     <!-- <Target Name="PostBuild" AfterTargets="PostBuildEvent"><Exec Condition="'$(OS)' == 'Windows_NT'" Command="echo ^>^>^>^>^>^>^>^>^> Copying package file $(ProjectDir)$(OutDir)$(ProjectName).dll in folder $(ProjectDir)..\..\lib\"/><Exec Condition="'$(OS)' == 'Windows_NT'" Command="copy /y $(ProjectDir)$(OutDir)$(ProjectName).dll $(ProjectDir)..\..\lib\"/></Target> -->
     <!-- Copy nupkg file in baget folder -->
     <Target Name="PostBuild" AfterTargets="Pack">
-        <Exec Condition="'$(OS)' == 'Windows_NT'"
-            Command="echo ^>^>^>^>^>^>^>^>^> Copying package file $(ProjectDir)$(OutDir)..\$(PackageId).$(PackageVersion).nupkg in folder $(ProjectDir)..\..\baget\"/>
-        <Exec Condition="'$(OS)' == 'Windows_NT'"
-            Command="copy /y $(ProjectDir)$(OutDir)..\$(PackageId).$(PackageVersion).nupkg $(ProjectDir)..\..\baget\"/>
+        <Exec Condition="'$(OS)' == 'Windows_NT'" Command="echo ^>^>^>^>^>^>^>^>^> Copying package file $(ProjectDir)$(OutDir)..\$(PackageId).$(PackageVersion).nupkg in folder $(ProjectDir)..\..\baget\"/>
+        <Exec Condition="'$(OS)' == 'Windows_NT'" Command="copy /y $(ProjectDir)$(OutDir)..\$(PackageId).$(PackageVersion).nupkg $(ProjectDir)..\..\baget\"/>
+
+        <Exec Condition="'$(OS)' == 'Unix'" Command="echo '>>>>>>>>> Copying package file $(ProjectDir)$(OutDir)../$(PackageId).$(PackageVersion).nupkg in folder $(ProjectDir)../../baget/'"/>
+        <Exec Condition="'$(OS)' == 'Unix'" Command="cp -rf $(ProjectDir)$(OutDir)../$(PackageId).$(PackageVersion).nupkg $(ProjectDir)../../baget/"/>
     </Target>
 </Project>
